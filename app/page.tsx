@@ -11,6 +11,7 @@ export default function Home() {
   const { t, language, setLanguage } = useLanguage();
 
   const [step, setStep] = useState<"input" | "loading" | "result">("input");
+  const [lastInput, setLastInput] = useState<any>(null);
   const [resultData, setResultData] = useState({
     angelName: "",
     userName: "",
@@ -37,7 +38,33 @@ export default function Home() {
       luckyPlace: data.luckyPlace,
       analysisSummary: data.analysisSummary
     });
+    setLastInput(data.originalPayload);
     setStep("result");
+  };
+
+  const handleStyleChange = async (theme: string) => {
+    if (!lastInput) return null;
+
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...lastInput, theme })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      // Only update the image and theme-related fields if any
+      setResultData(prev => ({
+        ...prev,
+        imageUrl: data.imageUrl
+      }));
+
+      return data.imageUrl;
+    } catch (err) {
+      console.error("Re-generation error", err);
+      return null;
+    }
   };
 
   const handleLoading = (isLoading: boolean) => {
@@ -85,6 +112,7 @@ export default function Home() {
           <ResultCard
             {...resultData}
             onBack={() => setStep("input")}
+            onStyleChange={handleStyleChange}
           />
         )}
       </main>

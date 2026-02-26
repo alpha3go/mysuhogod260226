@@ -17,24 +17,42 @@ interface ResultCardProps {
     luckyPlace?: string;
     analysisSummary?: string;
     onBack?: () => void;
+    onStyleChange?: (theme: string) => Promise<string | null>;
 }
 
 export default function ResultCard({
     imageUrl, angelName, userName, comfortMessage, fortuneMessage,
     luckyNumbers, luckyFood, luckyOutfit, luckyPlace, analysisSummary,
-    onBack
+    onBack, onStyleChange
 }: ResultCardProps) {
     const { t } = useLanguage();
     const [proxyImageUrl, setProxyImageUrl] = useState(imageUrl);
+    const [isImageLoading, setIsImageLoading] = useState(false);
+    const [activeTheme, setActiveTheme] = useState("friend");
     const imageContainerRef = useRef<HTMLDivElement>(null);
+    const captureAreaRef = useRef<HTMLDivElement>(null); // New ref for the capture area
+
+    const fetchAndSetProxy = async (url: string) => {
+        if (!url || !url.startsWith("http")) {
+            setProxyImageUrl(url); // For local or non-http images
+            return;
+        }
+        setIsImageLoading(true);
+        try {
+            const res = await fetch(`/api/proxy-image?url=${encodeURIComponent(url)}`);
+            const blob = await res.blob();
+            const localUrl = URL.createObjectURL(blob);
+            setProxyImageUrl(localUrl);
+        } catch (err) {
+            console.error("Proxy error", err);
+            setProxyImageUrl(url); // Fallback to original if proxy fails
+        } finally {
+            setIsImageLoading(false);
+        }
+    };
 
     useEffect(() => {
-        // OpenAI Image URL to Proxy URL for CORS
-        if (imageUrl && imageUrl.startsWith("http")) {
-            setProxyImageUrl(`/api/proxy-image?url=${encodeURIComponent(imageUrl)}`);
-        } else {
-            setProxyImageUrl(imageUrl);
-        }
+        fetchAndSetProxy(imageUrl);
     }, [imageUrl]);
 
     const downloadCanvas = (canvas: HTMLCanvasElement, filename: string) => {
@@ -43,6 +61,21 @@ export default function ResultCard({
         link.download = filename;
         link.href = dataUrl;
         link.click();
+    };
+
+    const handleThemeChange = async (theme: string) => {
+        if (theme === activeTheme || isImageLoading) return;
+        setActiveTheme(theme);
+        if (onStyleChange) {
+            setIsImageLoading(true);
+            const newUrl = await onStyleChange(theme);
+            if (newUrl) {
+                // proxy handle will be triggered by props update but if we want instant feedback:
+                await fetchAndSetProxy(newUrl);
+            } else {
+                setIsImageLoading(false);
+            }
+        }
     };
 
     const handleDownloadFull = async () => {
@@ -133,6 +166,36 @@ export default function ResultCard({
                     <h2 style={{ fontSize: "2rem", fontWeight: "900", letterSpacing: "-1px" }}>{angelName}</h2>
                 </div>
 
+                {/* Style Selection */}
+                <div style={{ marginBottom: "0px" }}>
+                    <h3 style={{ fontSize: "1rem", fontWeight: "800", marginBottom: "12px", textAlign: "left" }}>✨ {t("styleTitle")}</h3>
+                    <div style={{ display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "8px" }}>
+                        {[
+                            { id: "friend", label: t("themeFriend") },
+                            { id: "animal", label: t("themeAnimal") },
+                            { id: "general", label: t("themeGeneral") }
+                        ].map((theme) => (
+                            <button
+                                key={theme.id}
+                                onClick={() => handleThemeChange(theme.id)}
+                                className="btn"
+                                style={{
+                                    flexShrink: 0,
+                                    fontSize: "0.85rem",
+                                    padding: "8px 16px",
+                                    background: activeTheme === theme.id ? "#FFD23F" : "#fff",
+                                    border: "2px solid #111",
+                                    cursor: isImageLoading ? "wait" : "pointer",
+                                    boxShadow: activeTheme === theme.id ? "none" : "3px 3px 0px #111",
+                                    transform: activeTheme === theme.id ? "translate(2px, 2px)" : "none"
+                                }}
+                            >
+                                {theme.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Main Image Container for Independent Capture */}
                 <div
                     ref={imageContainerRef}
@@ -148,10 +211,31 @@ export default function ResultCard({
                     }}
                 >
                     {proxyImageUrl ? (
-                        <img src={proxyImageUrl} alt="My Suhogod" crossOrigin="anonymous" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                            src={proxyImageUrl}
+                            alt="My Suhogod"
+                            crossOrigin="anonymous"
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                filter: isImageLoading ? "blur(4px)" : "none",
+                                transition: "filter 0.3s ease"
+                            }}
+                        />
                     ) : (
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: "4rem" }}>
                             👼
+                        </div>
+                    )}
+                    {isImageLoading && (
+                        <div style={{
+                            position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
+                            background: "rgba(255,255,255,0.6)", display: "flex", alignItems: "center", justifyContent: "center",
+                            zIndex: 5
+                        }}>
+                            <div className="loading-spinner" style={{ width: "40px", height: "40px", border: "5px solid #FFD23F", borderTopColor: "transparent", borderRadius: "50%" }}></div>
                         </div>
                     )}
                 </div>

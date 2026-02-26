@@ -1,7 +1,7 @@
 // lib/promptGenerator.ts
 import { FortuneResult } from "./fortuneEngine";
 
-export function generateImagePrompt(fortune: FortuneResult, name: string): string {
+export function generateImagePrompt(fortune: FortuneResult, name: string, theme: string = "friend"): string {
   // DALL-E 3 고해상도 이미지 프롬프트 생성
   // 요건: 귀엽고 따뜻한 꼬마 수호천사, 3D 렌더링 스타일, 밝은 분위기
   // 속성 반영: 오행(element), 수비학 번호(lifePathNumber), 별자리(zodiacSign) 테마
@@ -11,9 +11,17 @@ export function generateImagePrompt(fortune: FortuneResult, name: string): strin
   else if (fortune.element.includes("화")) elementTheme = "warm fire sparks, gentle red and orange glow, bright lighting";
   else if (fortune.element.includes("목")) elementTheme = "leaf patterns, green and earthy tones, nature vibes";
   else if (fortune.element.includes("금")) elementTheme = "shiny metallic accents, gold and silver elegant tones, glowing light";
-  else elementTheme = "grounding earthy tones, crystal and rock elements, warm yellow and brown";
+  let styleDescription = "";
+  if (theme === "animal") {
+    styleDescription = `Cute and adorable personalized illustration of a character inspired by the ${fortune.zodiacAnimal} zodiac animal, dressed in small angelic wings`;
+  } else if (theme === "general") {
+    styleDescription = `Strong and reliable guardian deity character inspired by a traditional general (Jang-gun), wearing ornate but cute traditional armor, holding a protective shield or sword, yet with a charming and friendly vibe`;
+  } else {
+    // "friend" or default
+    styleDescription = `Friendly and cute little guardian angel character, looking like a trustworthy companion and friend, with a soft and lovable appearance`;
+  }
 
-  return `Cute and warm 2D flat illustration of a little guardian angel character for a person named "${name}", sticker art style, soft pastel colors, simple clean lines, very adorable chibi proportions, holding a small symbolic item. Theme: ${fortune.zodiacSign} constellation symbols subtly integrated into the background. Visual elements: ${elementTheme}. High quality, 4k digital art, sticker quality, lovable and peaceful atmosphere, suitable for merchandise and wallpapers.`;
+  return `${styleDescription} for a person named "${name}", 2D flat illustration, sticker art style, soft pastel colors, simple clean lines, very adorable chibi proportions. Theme: ${fortune.zodiacSign} constellation symbols subtly integrated into the background. Visual elements: ${elementTheme}. High quality, 4k digital art, sticker quality, lovable and peaceful atmosphere, suitable for merchandise and wallpapers.`;
 }
 
 export function generateTextPrompt(fortune: FortuneResult, region: string, name: string, language: string = "ko"): string {

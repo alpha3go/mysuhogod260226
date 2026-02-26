@@ -11,7 +11,7 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: "MY SUHOGOD | 나만의 맞춤 수호천사",
-  description: "사주, 수비학, 어스트롤로지로 분석하는 나만의 귀여운 수호천사와 위로의 메시지",
+  description: "사주, 수비학, 별자리로 분석하는 나만의 귀여운 수호천사와 위로의 메시지",
   openGraph: {
     title: "MY SUHOGOD | 나만의 맞춤 수호천사",
     description: "사주와 별자리로 나를 지켜줄 수호천사를 만나보세요.",

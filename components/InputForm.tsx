@@ -107,7 +107,7 @@ export default function InputForm({ onSuccess, setLoading }: InputFormProps) {
             if (!res.ok) throw new Error(data.error || "API 에러");
             setLoading(false);
             saveToHistory(currentEntry);
-            onSuccess({ ...data, userName: name });
+            onSuccess({ ...data, userName: name, originalPayload: payload });
         } catch (err: any) {
             console.error(err);
             alert(t("errorApi") + err.message);

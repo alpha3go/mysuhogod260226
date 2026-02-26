@@ -10,6 +10,7 @@ export interface UserFortuneData {
 export interface FortuneResult {
     lifePathNumber: number;
     zodiacSign: string;
+    zodiacAnimal: string; // 12지신 (쥐, 소, 호랑이 등)
     element: string; // 오행 (목, 화, 토, 금, 수)
 }
 
@@ -42,8 +43,6 @@ function getZodiacSign(month: number, day: number): string {
 }
 
 // 3. 사주 기반 핵심 오행 추출 (간략화된 예시)
-// 실제 만세력 API 없이, 연도/월/일의 일정한 패턴으로 오행을 매핑하는 간이 로직
-// 년도 끝자리 기준 예시 통계학적 접근 (0,1:금 2,3:수 4,5:목 6,7:화 8,9:토)
 function getBaseElement(year: number): string {
     const lastDigit = year % 10;
     if (lastDigit === 0 || lastDigit === 1) return "금(Metal)";
@@ -53,16 +52,27 @@ function getBaseElement(year: number): string {
     return "토(Earth)";
 }
 
+// 4. 12지신(Zodiac Animal) 추출
+function getZodiacAnimal(year: number): string {
+    const animals = ["쥐(Rat)", "소(Ox)", "호랑이(Tiger)", "토끼(Rabbit)", "용(Dragon)", "뱀(Snake)", "말(Horse)", "양(Sheep)", "원숭이(Monkey)", "닭(Rooster)", "개(Dog)", "돼지(Pig)"];
+    // (year - 4) % 12 is the standard formula for Chinese Zodiac starting from Rat
+    let index = (year - 4) % 12;
+    if (index < 0) index += 12;
+    return animals[index];
+}
+
 export function analyzeFortune(data: UserFortuneData): FortuneResult {
     const [year, month, day] = data.birthDate.split('-').map(Number);
 
     const lifePathNumber = calculateLifePathNumber(data.birthDate);
     const zodiacSign = getZodiacSign(month, day);
+    const zodiacAnimal = getZodiacAnimal(year);
     const element = getBaseElement(year);
 
     return {
         lifePathNumber,
         zodiacSign,
+        zodiacAnimal,
         element
     };
 }

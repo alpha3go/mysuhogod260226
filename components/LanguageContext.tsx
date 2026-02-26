@@ -26,7 +26,7 @@ const translations: Record<Language, Record<string, string>> = {
         errorPlace: "태어난 장소를 모두 선택해주세요!",
         errorApi: "오류가 발생했습니다: ",
         appTitle: "My Suhogod",
-        appDesc1: "사주, 수비학, 어스트롤로지로 분석하는",
+        appDesc1: "사주, 수비학, 별자리로 분석하는",
         appDesc2: "나만의 귀여운 맞춤 수호천사",
         loadTitle: "잠시만 기다려주세요",
         loadMsg1: "별의 흐름을 읽는 중...",
@@ -52,7 +52,11 @@ const translations: Record<Language, Record<string, string>> = {
         recentRecords: "최근 분석한 분들",
         noRecords: "아직 기록이 없습니다.",
         clearHistory: "기록 삭제",
-        userAngelTitle: "님의 수호천사"
+        userAngelTitle: "님의 수호천사",
+        styleTitle: "수호신 스타일 변경",
+        themeAnimal: "귀여운 동물",
+        themeGeneral: "든든한 장군",
+        themeFriend: "친근한 친구"
     },
     en: {
         title: "Enter Your Information",
@@ -95,7 +99,11 @@ const translations: Record<Language, Record<string, string>> = {
         recentRecords: "Recent Analyses",
         noRecords: "No records yet.",
         clearHistory: "Clear",
-        userAngelTitle: "'s Guardian Angel"
+        userAngelTitle: "'s Guardian Angel",
+        styleTitle: "Change Style",
+        themeAnimal: "Cute Animal",
+        themeGeneral: "Strong General",
+        themeFriend: "Friendly Companion"
     }
 };
 

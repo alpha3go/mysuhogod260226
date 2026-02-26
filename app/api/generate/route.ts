@@ -17,7 +17,7 @@ export async function POST(req: Request) {
         });
 
         const body = await req.json();
-        const { birthDate, birthTime, region, language, name } = body;
+        const { birthDate, birthTime, region, language, name, theme } = body;
 
         if (!birthDate || !region) {
             return NextResponse.json({ error: "필수 정보가 누락되었습니다." }, { status: 400 });
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
         const fortuneData = analyzeFortune({ birthDate, birthTime, region });
 
         // 2. Generate Prompts
-        const imagePrompt = generateImagePrompt(fortuneData, name || "Someone Special");
+        const imagePrompt = generateImagePrompt(fortuneData, name || "Someone Special", theme || "friend");
         const textPrompt = generateTextPrompt(fortuneData, region, name || "이용자", language);
 
         // 3. Call OpenAI APIs in parallel
