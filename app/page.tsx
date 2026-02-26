@@ -13,6 +13,7 @@ export default function Home() {
   const [step, setStep] = useState<"input" | "loading" | "result">("input");
   const [resultData, setResultData] = useState({
     angelName: "",
+    userName: "",
     imageUrl: "",
     comfortMessage: "",
     fortuneMessage: "",
@@ -26,6 +27,7 @@ export default function Home() {
   const handleSuccess = (data: any) => {
     setResultData({
       angelName: data.angelName,
+      userName: data.userName,
       imageUrl: data.imageUrl,
       comfortMessage: data.comfortMessage,
       fortuneMessage: data.fortuneMessage,
@@ -82,6 +84,7 @@ export default function Home() {
         {step === "result" && (
           <ResultCard
             {...resultData}
+            onBack={() => setStep("input")}
           />
         )}
       </main>

@@ -45,7 +45,14 @@ const translations: Record<Language, Record<string, string>> = {
         luckyNumbersTitle: "행운의 숫자",
         luckyFoodTitle: "행운의 음식",
         luckyOutfitTitle: "행운의 코디",
-        luckyPlaceTitle: "행운의 장소"
+        luckyPlaceTitle: "행운의 장소",
+        nameLabel: "이름",
+        namePlaceholder: "이름을 입력해주세요 (예: 홍길동)",
+        backToHome: "다시 하기 (다른 사람 분석)",
+        recentRecords: "최근 분석한 분들",
+        noRecords: "아직 기록이 없습니다.",
+        clearHistory: "기록 삭제",
+        userAngelTitle: "님의 수호천사"
     },
     en: {
         title: "Enter Your Information",
@@ -81,7 +88,14 @@ const translations: Record<Language, Record<string, string>> = {
         luckyNumbersTitle: "Lucky Numbers",
         luckyFoodTitle: "Lucky Food",
         luckyOutfitTitle: "Lucky Outfit",
-        luckyPlaceTitle: "Lucky Place"
+        luckyPlaceTitle: "Lucky Place",
+        nameLabel: "Name",
+        namePlaceholder: "Enter name (e.g. John Doe)",
+        backToHome: "Try Again (Analyze Someone Else)",
+        recentRecords: "Recent Analyses",
+        noRecords: "No records yet.",
+        clearHistory: "Clear",
+        userAngelTitle: "'s Guardian Angel"
     }
 };
 

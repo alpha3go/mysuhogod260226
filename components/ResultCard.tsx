@@ -8,6 +8,7 @@ import { useLanguage } from "./LanguageContext";
 interface ResultCardProps {
     imageUrl: string;
     angelName: string;
+    userName?: string;
     comfortMessage: string;
     fortuneMessage: string;
     luckyNumbers?: number[];
@@ -15,11 +16,13 @@ interface ResultCardProps {
     luckyOutfit?: string;
     luckyPlace?: string;
     analysisSummary?: string;
+    onBack?: () => void;
 }
 
 export default function ResultCard({
-    imageUrl, angelName, comfortMessage, fortuneMessage,
-    luckyNumbers, luckyFood, luckyOutfit, luckyPlace, analysisSummary
+    imageUrl, angelName, userName, comfortMessage, fortuneMessage,
+    luckyNumbers, luckyFood, luckyOutfit, luckyPlace, analysisSummary,
+    onBack
 }: ResultCardProps) {
     const { t } = useLanguage();
     const [proxyImageUrl, setProxyImageUrl] = useState(imageUrl);
@@ -125,7 +128,7 @@ export default function ResultCard({
                 {/* Title */}
                 <div>
                     <div style={{ display: "inline-block", background: "#FFD23F", border: "3px solid #111", padding: "4px 12px", borderRadius: "20px", fontWeight: "800", fontSize: "0.9rem", marginBottom: "8px" }}>
-                        {t("myAngel")}
+                        {userName ? `${userName}${t("userAngelTitle")}` : t("myAngel")}
                     </div>
                     <h2 style={{ fontSize: "2rem", fontWeight: "900", letterSpacing: "-1px" }}>{angelName}</h2>
                 </div>
@@ -245,6 +248,12 @@ export default function ResultCard({
                         🔗 {t("copyLink")}
                     </button>
                 </div>
+
+                {onBack && (
+                    <button onClick={onBack} className="btn btn-accent" style={{ marginTop: "12px", fontSize: "1.1rem", padding: "16px" }}>
+                        🔙 {t("backToHome")}
+                    </button>
+                )}
             </div>
         </div>
     );

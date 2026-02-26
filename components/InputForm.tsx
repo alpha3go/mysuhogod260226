@@ -1,8 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { globalRegionData } from "../lib/globalRegionData";
 import { useLanguage } from "./LanguageContext";
+
+interface HistoryRecord {
+    name: string;
+    birthDate: string;
+    birthTime: string | null;
+    isTimeUnknown: boolean;
+    country: string;
+    region1Depth: string;
+    region2Depth: string;
+}
 
 interface InputFormProps {
     onSuccess: (data: any) => void;
@@ -12,6 +22,7 @@ interface InputFormProps {
 export default function InputForm({ onSuccess, setLoading }: InputFormProps) {
     const { t, language } = useLanguage();
 
+    const [name, setName] = useState("");
     const [birthDate, setBirthDate] = useState("");
     const [birthTime, setBirthTime] = useState("");
     const [isTimeUnknown, setIsTimeUnknown] = useState(false);
@@ -19,6 +30,40 @@ export default function InputForm({ onSuccess, setLoading }: InputFormProps) {
     const [country, setCountry] = useState("");
     const [region1Depth, setRegion1Depth] = useState("");
     const [region2Depth, setRegion2Depth] = useState("");
+
+    const [history, setHistory] = useState<HistoryRecord[]>([]);
+
+    useEffect(() => {
+        const saved = localStorage.getItem("suhogod-history");
+        if (saved) {
+            try {
+                setHistory(JSON.parse(saved));
+            } catch (e) {
+                console.error("Failed to parse history", e);
+            }
+        }
+    }, []);
+
+    const saveToHistory = (record: HistoryRecord) => {
+        const newHistory = [record, ...history.filter(h => h.name !== record.name)].slice(0, 5);
+        setHistory(newHistory);
+        localStorage.setItem("suhogod-history", JSON.stringify(newHistory));
+    };
+
+    const loadRecord = (record: HistoryRecord) => {
+        setName(record.name);
+        setBirthDate(record.birthDate);
+        setBirthTime(record.birthTime || "");
+        setIsTimeUnknown(record.isTimeUnknown);
+        setCountry(record.country);
+        setRegion1Depth(record.region1Depth);
+        setRegion2Depth(record.region2Depth);
+    };
+
+    const clearHistory = () => {
+        setHistory([]);
+        localStorage.removeItem("suhogod-history");
+    };
 
     const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setCountry(e.target.value);
@@ -33,15 +78,22 @@ export default function InputForm({ onSuccess, setLoading }: InputFormProps) {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!name) return alert(t("errorName") || "이름을 입력해주세요!");
         if (!birthDate) return alert(t("errorDate"));
         if (!isTimeUnknown && !birthTime) return alert(t("errorTime"));
         if (!country || !region1Depth || !region2Depth) return alert(t("errorPlace"));
 
         const payload = {
+            name,
             birthDate,
             birthTime: isTimeUnknown ? null : birthTime,
             region: `${country} ${region1Depth} ${region2Depth}`,
             language // Pass current language to API for prompt translation
+        };
+
+        const currentEntry: HistoryRecord = {
+            name, birthDate, birthTime: isTimeUnknown ? null : birthTime,
+            isTimeUnknown, country, region1Depth, region2Depth
         };
 
         try {
@@ -54,7 +106,8 @@ export default function InputForm({ onSuccess, setLoading }: InputFormProps) {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "API 에러");
             setLoading(false);
-            onSuccess(data);
+            saveToHistory(currentEntry);
+            onSuccess({ ...data, userName: name });
         } catch (err: any) {
             console.error(err);
             alert(t("errorApi") + err.message);
@@ -66,6 +119,19 @@ export default function InputForm({ onSuccess, setLoading }: InputFormProps) {
         <form onSubmit={handleSubmit} className="card" style={{ textAlign: "left" }}>
             <h2 style={{ fontSize: "1.8rem", marginBottom: "24px" }}>{t("title")}</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+
+                {/* Name */}
+                <div>
+                    <label style={{ fontWeight: "700", display: "block", marginBottom: "8px" }}>{t("nameLabel")}</label>
+                    <input
+                        type="text"
+                        className="input-field"
+                        placeholder={t("namePlaceholder")}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
+                </div>
 
                 {/* Date of Birth */}
                 <div>
@@ -163,6 +229,42 @@ export default function InputForm({ onSuccess, setLoading }: InputFormProps) {
                 >
                     {t("submitBtn")}
                 </button>
+
+                {/* History Section */}
+                {history.length > 0 && (
+                    <div style={{ marginTop: "32px", borderTop: "3px dashed #111", paddingTop: "24px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                            <h3 style={{ fontSize: "1.1rem", fontWeight: "800" }}>{t("recentRecords")}</h3>
+                            <button
+                                type="button"
+                                onClick={clearHistory}
+                                style={{ fontSize: "0.8rem", background: "none", border: "none", textDecoration: "underline", cursor: "pointer", fontWeight: "600", color: "#666" }}
+                            >
+                                {t("clearHistory")}
+                            </button>
+                        </div>
+                        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                            {history.map((record, i) => (
+                                <button
+                                    key={i}
+                                    type="button"
+                                    onClick={() => loadRecord(record)}
+                                    className="btn"
+                                    style={{
+                                        fontSize: "0.9rem",
+                                        padding: "8px 14px",
+                                        background: "#fff",
+                                        border: "2px solid #111",
+                                        boxShadow: "3px 3px 0px #111",
+                                        borderRadius: "20px"
+                                    }}
+                                >
+                                    👤 {record.name}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </form>
     );

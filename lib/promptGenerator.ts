@@ -1,7 +1,7 @@
 // lib/promptGenerator.ts
 import { FortuneResult } from "./fortuneEngine";
 
-export function generateImagePrompt(fortune: FortuneResult): string {
+export function generateImagePrompt(fortune: FortuneResult, name: string): string {
   // DALL-E 3 고해상도 이미지 프롬프트 생성
   // 요건: 귀엽고 따뜻한 꼬마 수호천사, 3D 렌더링 스타일, 밝은 분위기
   // 속성 반영: 오행(element), 수비학 번호(lifePathNumber), 별자리(zodiacSign) 테마
@@ -13,12 +13,12 @@ export function generateImagePrompt(fortune: FortuneResult): string {
   else if (fortune.element.includes("금")) elementTheme = "shiny metallic accents, gold and silver elegant tones, glowing light";
   else elementTheme = "grounding earthy tones, crystal and rock elements, warm yellow and brown";
 
-  return `Cute and warm 2D flat illustration of a little guardian angel character, sticker art style, soft pastel colors, simple clean lines, very adorable chibi proportions, holding a small symbolic item. Theme: ${fortune.zodiacSign} constellation symbols subtly integrated into the background. Visual elements: ${elementTheme}. High quality, 4k digital art, sticker quality, lovable and peaceful atmosphere, suitable for merchandise and wallpapers.`;
+  return `Cute and warm 2D flat illustration of a little guardian angel character for a person named "${name}", sticker art style, soft pastel colors, simple clean lines, very adorable chibi proportions, holding a small symbolic item. Theme: ${fortune.zodiacSign} constellation symbols subtly integrated into the background. Visual elements: ${elementTheme}. High quality, 4k digital art, sticker quality, lovable and peaceful atmosphere, suitable for merchandise and wallpapers.`;
 }
 
-export function generateTextPrompt(fortune: FortuneResult, region: string, language: string = "ko"): string {
+export function generateTextPrompt(fortune: FortuneResult, region: string, name: string, language: string = "ko"): string {
   if (language === "en") {
-    return `You are a warm guardian angel who analyzes the user's fortune.
+    return `You are a warm guardian angel who analyzes the fortune of "${name}".
 User Analysis Results:
 - Zodiac Sign: ${fortune.zodiacSign}
 - Core Energy (Five Elements): ${fortune.element}
@@ -40,7 +40,7 @@ Output only JSON.`;
   }
 
   // GPT 텍스트 생성을 위한 한국어 프롬프트 (기본값)
-  return `당신은 사용자의 운세를 분석해주는 따뜻한 수호천사입니다.
+  return `당신은 "${name}"님의 운세를 분석해주는 따뜻한 수호천사입니다.
 사용자 분석 결과:
 - 별자리: ${fortune.zodiacSign}
 - 핵심 기운(오행): ${fortune.element}
