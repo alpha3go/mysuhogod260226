@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { regionData } from "../lib/regionData";
+import { globalRegionData } from "../lib/globalRegionData";
+import { useLanguage } from "./LanguageContext";
 
 interface InputFormProps {
     onSuccess: (data: any) => void;
@@ -9,12 +10,21 @@ interface InputFormProps {
 }
 
 export default function InputForm({ onSuccess, setLoading }: InputFormProps) {
+    const { t, language } = useLanguage();
+
     const [birthDate, setBirthDate] = useState("");
     const [birthTime, setBirthTime] = useState("");
     const [isTimeUnknown, setIsTimeUnknown] = useState(false);
 
+    const [country, setCountry] = useState("");
     const [region1Depth, setRegion1Depth] = useState("");
     const [region2Depth, setRegion2Depth] = useState("");
+
+    const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setCountry(e.target.value);
+        setRegion1Depth(""); // Reset 1st depth
+        setRegion2Depth(""); // Reset 2nd depth
+    };
 
     const handleRegion1Change = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setRegion1Depth(e.target.value);
@@ -23,14 +33,15 @@ export default function InputForm({ onSuccess, setLoading }: InputFormProps) {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!birthDate) return alert("생년월일을 입력해주세요!");
-        if (!isTimeUnknown && !birthTime) return alert("태어난 시간을 입력하거나 '모름'을 체크해주세요!");
-        if (!region1Depth || !region2Depth) return alert("태어난 장소를 모두 선택해주세요!");
+        if (!birthDate) return alert(t("errorDate"));
+        if (!isTimeUnknown && !birthTime) return alert(t("errorTime"));
+        if (!country || !region1Depth || !region2Depth) return alert(t("errorPlace"));
 
         const payload = {
             birthDate,
             birthTime: isTimeUnknown ? null : birthTime,
-            region: `${region1Depth} ${region2Depth}`,
+            region: `${country} ${region1Depth} ${region2Depth}`,
+            language // Pass current language to API for prompt translation
         };
 
         try {
@@ -46,19 +57,19 @@ export default function InputForm({ onSuccess, setLoading }: InputFormProps) {
             onSuccess(data);
         } catch (err: any) {
             console.error(err);
-            alert("오류가 발생했습니다: " + err.message);
+            alert(t("errorApi") + err.message);
             setLoading(false);
         }
     };
 
     return (
         <form onSubmit={handleSubmit} className="card" style={{ textAlign: "left" }}>
-            <h2 style={{ fontSize: "1.8rem", marginBottom: "24px" }}>내 정보 입력하기</h2>
+            <h2 style={{ fontSize: "1.8rem", marginBottom: "24px" }}>{t("title")}</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
                 {/* Date of Birth */}
                 <div>
-                    <label style={{ fontWeight: "700", display: "block", marginBottom: "8px" }}>생년월일 *</label>
+                    <label style={{ fontWeight: "700", display: "block", marginBottom: "8px" }}>{t("birthDate")}</label>
                     <input
                         type="date"
                         className="input-field"
@@ -72,7 +83,7 @@ export default function InputForm({ onSuccess, setLoading }: InputFormProps) {
                 {/* Time of Birth */}
                 <div style={{ position: "relative" }}>
                     <label style={{ fontWeight: "700", display: "block", marginBottom: "8px" }}>
-                        태어난 시간 *
+                        {t("birthTime")}
                     </label>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center" }}>
                         <input
@@ -91,41 +102,57 @@ export default function InputForm({ onSuccess, setLoading }: InputFormProps) {
                                 onChange={(e) => setIsTimeUnknown(e.target.checked)}
                                 style={{ width: "20px", height: "20px", accentColor: "#FF4D4D" }}
                             />
-                            모름
+                            {t("unknown")}
                         </label>
                     </div>
                 </div>
 
                 {/* Place of Birth */}
                 <div>
-                    <label style={{ fontWeight: "700", display: "block", marginBottom: "8px" }}>태어난 장소 *</label>
-                    <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                    <label style={{ fontWeight: "700", display: "block", marginBottom: "8px" }}>{t("place")}</label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                         <select
                             className="input-field"
-                            style={{ flex: 1, minWidth: "140px", cursor: "pointer" }}
-                            value={region1Depth}
-                            onChange={handleRegion1Change}
+                            style={{ width: "100%", cursor: "pointer" }}
+                            value={country}
+                            onChange={handleCountryChange}
                             required
                         >
-                            <option value="" disabled>도/광역시 선택</option>
-                            {Object.keys(regionData).map((region) => (
-                                <option key={region} value={region}>{region}</option>
+                            <option value="" disabled>{t("countrySelect")}</option>
+                            {Object.keys(globalRegionData).map((c) => (
+                                <option key={c} value={c}>{c}</option>
                             ))}
                         </select>
 
-                        <select
-                            className="input-field"
-                            style={{ flex: 1, minWidth: "140px", cursor: "pointer" }}
-                            value={region2Depth}
-                            onChange={(e) => setRegion2Depth(e.target.value)}
-                            disabled={!region1Depth}
-                            required
-                        >
-                            <option value="" disabled>시/군/구 선택</option>
-                            {region1Depth && regionData[region1Depth].map((city) => (
-                                <option key={city} value={city}>{city}</option>
-                            ))}
-                        </select>
+                        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                            <select
+                                className="input-field"
+                                style={{ flex: 1, minWidth: "140px", cursor: "pointer" }}
+                                value={region1Depth}
+                                onChange={handleRegion1Change}
+                                disabled={!country}
+                                required
+                            >
+                                <option value="" disabled>{t("regionSelect")}</option>
+                                {country && Object.keys(globalRegionData[country]).map((region) => (
+                                    <option key={region} value={region}>{region}</option>
+                                ))}
+                            </select>
+
+                            <select
+                                className="input-field"
+                                style={{ flex: 1, minWidth: "140px", cursor: "pointer" }}
+                                value={region2Depth}
+                                onChange={(e) => setRegion2Depth(e.target.value)}
+                                disabled={!region1Depth}
+                                required
+                            >
+                                <option value="" disabled>{t("citySelect")}</option>
+                                {region1Depth && globalRegionData[country][region1Depth].map((city) => (
+                                    <option key={city} value={city}>{city}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -134,7 +161,7 @@ export default function InputForm({ onSuccess, setLoading }: InputFormProps) {
                     className="btn btn-accent"
                     style={{ marginTop: "16px", width: "100%", fontSize: "1.2rem", padding: "16px" }}
                 >
-                    나만의 수호천사 그리기 👉
+                    {t("submitBtn")}
                 </button>
             </div>
         </form>

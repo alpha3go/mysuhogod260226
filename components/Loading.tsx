@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "./LanguageContext";
 
 export default function Loading() {
+    const { t } = useLanguage();
     const [dots, setDots] = useState("");
-    const messages = [
-        "별의 흐름을 읽는 중...",
-        "생년월일의 숫자를 더하는 중...",
-        "사주의 오행을 분석하는 중...",
-        "당신만의 귀여운 수호천사를 그리는 중..."
-    ];
+
+    // We get translation keys instead of raw text
+    const messageKeys = ["loadMsg1", "loadMsg2", "loadMsg3", "loadMsg4"];
     const [msgIndex, setMsgIndex] = useState(0);
 
     useEffect(() => {
@@ -18,7 +17,7 @@ export default function Loading() {
         }, 500);
 
         const msgInterval = setInterval(() => {
-            setMsgIndex(prev => (prev + 1) % messages.length);
+            setMsgIndex(prev => (prev + 1) % messageKeys.length);
         }, 3500);
 
         return () => {
@@ -53,10 +52,10 @@ export default function Loading() {
 
             <div>
                 <h2 style={{ fontSize: "1.5rem", fontWeight: "800", marginBottom: "8px" }}>
-                    잠시만 기다려주세요{dots}
+                    {t("loadTitle")}{dots}
                 </h2>
                 <p style={{ fontSize: "1.1rem", color: "var(--secondary)", fontWeight: "600" }}>
-                    {messages[msgIndex]}
+                    {t(messageKeys[msgIndex])}
                 </p>
             </div>
         </div>

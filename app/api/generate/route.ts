@@ -17,7 +17,7 @@ export async function POST(req: Request) {
         });
 
         const body = await req.json();
-        const { birthDate, birthTime, region } = body;
+        const { birthDate, birthTime, region, language } = body;
 
         if (!birthDate || !region) {
             return NextResponse.json({ error: "필수 정보가 누락되었습니다." }, { status: 400 });
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
 
         // 2. Generate Prompts
         const imagePrompt = generateImagePrompt(fortuneData);
-        const textPrompt = generateTextPrompt(fortuneData, region);
+        const textPrompt = generateTextPrompt(fortuneData, region, language);
 
         // 3. Call OpenAI APIs in parallel
         const [imageResponse, textResponse] = await Promise.all([

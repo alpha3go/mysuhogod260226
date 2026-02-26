@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import KakaoScript from "../components/KakaoScript";
+import { LanguageProvider } from "../components/LanguageContext";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -25,8 +26,10 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={outfit.variable} suppressHydrationWarning>
-        {children}
-        <KakaoScript />
+        <LanguageProvider>
+          {children}
+          <KakaoScript />
+        </LanguageProvider>
       </body>
     </html>
   );
