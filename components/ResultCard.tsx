@@ -10,9 +10,17 @@ interface ResultCardProps {
     angelName: string;
     comfortMessage: string;
     fortuneMessage: string;
+    luckyNumbers?: number[];
+    luckyFood?: string;
+    luckyOutfit?: string;
+    luckyPlace?: string;
+    analysisSummary?: string;
 }
 
-export default function ResultCard({ imageUrl, angelName, comfortMessage, fortuneMessage }: ResultCardProps) {
+export default function ResultCard({
+    imageUrl, angelName, comfortMessage, fortuneMessage,
+    luckyNumbers, luckyFood, luckyOutfit, luckyPlace, analysisSummary
+}: ResultCardProps) {
     const { t } = useLanguage();
     const [proxyImageUrl, setProxyImageUrl] = useState(imageUrl);
     const imageContainerRef = useRef<HTMLDivElement>(null);
@@ -164,6 +172,52 @@ export default function ResultCard({ imageUrl, angelName, comfortMessage, fortun
                             {fortuneMessage}
                         </p>
                     </div>
+
+                    {/* Analysis Summary */}
+                    {analysisSummary && (
+                        <div style={{ padding: "16px", background: "#f8f0ff", border: "3px solid #111", borderRadius: "12px" }}>
+                            <h3 style={{ fontSize: "1.2rem", fontWeight: "800", marginBottom: "8px", color: "#B34DFF", display: "flex", alignItems: "center", gap: "8px" }}>
+                                <span>🔮</span> {t("analysisTitle")}
+                            </h3>
+                            <p style={{ fontWeight: "500", lineHeight: "1.6", fontSize: "0.95rem" }}>
+                                {analysisSummary}
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Lucky Info Grid */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                        <div style={{ padding: "12px", background: "#fff", border: "3px solid #111", borderRadius: "12px", boxShadow: "3px 3px 0px #111" }}>
+                            <div style={{ fontSize: "0.8rem", fontWeight: "800", color: "#888", marginBottom: "4px" }}>{t("luckyFoodTitle")}</div>
+                            <div style={{ fontWeight: "700" }}>{luckyFood || "-"}</div>
+                        </div>
+                        <div style={{ padding: "12px", background: "#fff", border: "3px solid #111", borderRadius: "12px", boxShadow: "3px 3px 0px #111" }}>
+                            <div style={{ fontSize: "0.8rem", fontWeight: "800", color: "#888", marginBottom: "4px" }}>{t("luckyOutfitTitle")}</div>
+                            <div style={{ fontWeight: "700" }}>{luckyOutfit || "-"}</div>
+                        </div>
+                        <div style={{ padding: "12px", background: "#fff", border: "3px solid #111", borderRadius: "12px", boxShadow: "3px 3px 0px #111", gridColumn: "span 2" }}>
+                            <div style={{ fontSize: "0.8rem", fontWeight: "800", color: "#888", marginBottom: "4px" }}>{t("luckyPlaceTitle")}</div>
+                            <div style={{ fontWeight: "700" }}>{luckyPlace || "-"}</div>
+                        </div>
+                    </div>
+
+                    {/* Lucky Numbers */}
+                    {luckyNumbers && luckyNumbers.length > 0 && (
+                        <div style={{ padding: "16px", background: "#E7FFAC", border: "3px solid #111", borderRadius: "12px", textAlign: "center" }}>
+                            <h3 style={{ fontSize: "1rem", fontWeight: "800", marginBottom: "12px" }}>{t("luckyNumbersTitle")}</h3>
+                            <div style={{ display: "flex", justifyContent: "center", gap: "8px", flexWrap: "wrap" }}>
+                                {luckyNumbers.map((num, i) => (
+                                    <span key={i} style={{
+                                        width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center",
+                                        background: "#fff", border: "2px solid #111", borderRadius: "50%", fontWeight: "800",
+                                        boxShadow: "2px 2px 0px #111"
+                                    }}>
+                                        {num}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

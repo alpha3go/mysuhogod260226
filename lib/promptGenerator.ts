@@ -13,7 +13,7 @@ export function generateImagePrompt(fortune: FortuneResult): string {
   else if (fortune.element.includes("금")) elementTheme = "shiny metallic accents, gold and silver elegant tones, glowing light";
   else elementTheme = "grounding earthy tones, crystal and rock elements, warm yellow and brown";
 
-  return `Cute and warm 3D rendered little guardian angel character, neo-brutalism inspired but highly adorable and soft, chibi style, holding a magic wand, floating in a bright background. Theme: ${fortune.zodiacSign} constellation symbols delicately placed in the background. Visual elements: ${elementTheme}. Core numeric aura glowing with the number ${fortune.lifePathNumber}. High quality, 4k resolution, colorful, comforting, and peaceful atmosphere.`;
+  return `Cute and warm 2D flat illustration of a little guardian angel character, sticker art style, soft pastel colors, simple clean lines, very adorable chibi proportions, holding a small symbolic item. Theme: ${fortune.zodiacSign} constellation symbols subtly integrated into the background. Visual elements: ${elementTheme}. High quality, 4k digital art, sticker quality, lovable and peaceful atmosphere, suitable for merchandise and wallpapers.`;
 }
 
 export function generateTextPrompt(fortune: FortuneResult, region: string, language: string = "ko"): string {
@@ -27,9 +27,14 @@ User Analysis Results:
 
 Please respond in the following JSON format:
 {
-  "angelName": "A beautiful English name that fits the guardian angel's light/attribute (e.g., Shasha the Dewdrop Angel)",
-  "comfortMessage": "A message of support/comfort that makes the user feel warmly hugged and protected (3-4 sentences, friendly tone)",
-  "fortuneMessage": "Reflecting the analysis results slightly, upcoming opportunities or luck, and brief precautions (gentle tone, within 3 sentences)"
+  "angelName": "A beautiful English name that fits the guardian angel's light/attribute",
+  "comfortMessage": "A message of support/comfort (3-4 sentences, friendly tone)",
+  "fortuneMessage": "Based on the results, upcoming luck and precautions (3 sentences)",
+  "luckyNumbers": [6 numbers],
+  "luckyFood": "Food for luck",
+  "luckyOutfit": "Coordinated outfit for luck",
+  "luckyPlace": "Place for good energy",
+  "analysisSummary": "A concise expert-level summary (3-4 sentences) explaining how Saju, Numerology, and Astrology overlap for this user."
 }
 Output only JSON.`;
   }
@@ -44,9 +49,14 @@ Output only JSON.`;
 
 다음 JSON 형태로 응답해 주세요:
 {
-  "angelName": "수호천사의 빛/속성에 어울리는 예쁜 한국어 이름 (예: 물방울 천사 샤샤)",
-  "comfortMessage": "이용자를 따뜻하게 안아주고 곁에서 지켜준다는 느낌의 응원/위로 메시지 (3~4문장, 다정한 어투)",
-  "fortuneMessage": "위 분석 결과를 약간 반영하여, 다가올 기회나 행운, 그리고 짧은 주의사항 (부드러운 어조, 3문장 이내)"
+  "angelName": "수호천사의 이름",
+  "comfortMessage": "따뜻한 위로의 메시지 (3~4문장)",
+  "fortuneMessage": "행운과 주의사항 (3문장 이내)",
+  "luckyNumbers": [6개의 행운의 숫자],
+  "luckyFood": "행운의 음식",
+  "luckyOutfit": "행운의 코디",
+  "luckyPlace": "행운의 장소",
+  "analysisSummary": "사주, 수비학, 점성술 분석 정보를 종합하여 사용자에게 설명해주는 전문적인 요약 (3~4문장)"
 }
 오직 JSON만 출력해야 합니다.`;
 }

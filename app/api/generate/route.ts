@@ -59,7 +59,12 @@ export async function POST(req: Request) {
         let parsedText = {
             angelName: "빛의 수호천사",
             comfortMessage: "API 연동에 일시적인 문제가 있었습니다. 하지만 천사는 항상 당신 곁에 있습니다.",
-            fortuneMessage: "잠시 후 다시 시도해보세요."
+            fortuneMessage: "잠시 후 다시 시도해보세요.",
+            luckyNumbers: [7, 14, 21, 28, 35, 42],
+            luckyFood: "따뜻한 차",
+            luckyOutfit: "편안한 가디건",
+            luckyPlace: "조용한 공원",
+            analysisSummary: "당신의 태어난 날과 시간, 그리고 장소에는 특별한 기운이 깃들어 있습니다."
         };
 
         try {
@@ -74,7 +79,12 @@ export async function POST(req: Request) {
             imageUrl,
             angelName: parsedText.angelName,
             comfortMessage: parsedText.comfortMessage,
-            fortuneMessage: parsedText.fortuneMessage
+            fortuneMessage: parsedText.fortuneMessage,
+            luckyNumbers: parsedText.luckyNumbers,
+            luckyFood: parsedText.luckyFood,
+            luckyOutfit: parsedText.luckyOutfit,
+            luckyPlace: parsedText.luckyPlace,
+            analysisSummary: parsedText.analysisSummary
         });
 
     } catch (error: any) {

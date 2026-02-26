@@ -40,7 +40,12 @@ const translations: Record<Language, Record<string, string>> = {
         saveImageOnly: "수호천사만 저장하기",
         kakaoShare: "카톡 공유",
         copyLink: "링크 복사",
-        linkCopied: "링크가 클립보드에 복사되었습니다!"
+        linkCopied: "링크가 클립보드에 복사되었습니다!",
+        analysisTitle: "기운 분석 (사주·수비학·점성술)",
+        luckyNumbersTitle: "행운의 숫자",
+        luckyFoodTitle: "행운의 음식",
+        luckyOutfitTitle: "행운의 코디",
+        luckyPlaceTitle: "행운의 장소"
     },
     en: {
         title: "Enter Your Information",
@@ -71,7 +76,12 @@ const translations: Record<Language, Record<string, string>> = {
         saveImageOnly: "Save Image Only",
         kakaoShare: "Share via Kakao",
         copyLink: "Copy Link",
-        linkCopied: "Link copied to clipboard!"
+        linkCopied: "Link copied to clipboard!",
+        analysisTitle: "Energy Analysis (Saju·Num·Ast)",
+        luckyNumbersTitle: "Lucky Numbers",
+        luckyFoodTitle: "Lucky Food",
+        luckyOutfitTitle: "Lucky Outfit",
+        luckyPlaceTitle: "Lucky Place"
     }
 };
 

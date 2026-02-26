@@ -15,7 +15,12 @@ export default function Home() {
     angelName: "",
     imageUrl: "",
     comfortMessage: "",
-    fortuneMessage: ""
+    fortuneMessage: "",
+    luckyNumbers: [] as number[],
+    luckyFood: "",
+    luckyOutfit: "",
+    luckyPlace: "",
+    analysisSummary: ""
   });
 
   const handleSuccess = (data: any) => {
@@ -23,7 +28,12 @@ export default function Home() {
       angelName: data.angelName,
       imageUrl: data.imageUrl,
       comfortMessage: data.comfortMessage,
-      fortuneMessage: data.fortuneMessage
+      fortuneMessage: data.fortuneMessage,
+      luckyNumbers: data.luckyNumbers,
+      luckyFood: data.luckyFood,
+      luckyOutfit: data.luckyOutfit,
+      luckyPlace: data.luckyPlace,
+      analysisSummary: data.analysisSummary
     });
     setStep("result");
   };
@@ -71,10 +81,7 @@ export default function Home() {
 
         {step === "result" && (
           <ResultCard
-            angelName={resultData.angelName}
-            imageUrl={resultData.imageUrl}
-            comfortMessage={resultData.comfortMessage}
-            fortuneMessage={resultData.fortuneMessage}
+            {...resultData}
           />
         )}
       </main>
