@@ -18,10 +18,15 @@ export function generateImagePrompt(fortune: FortuneResult, name: string, theme:
     styleDescription = `Strong and reliable guardian deity character inspired by a traditional general (Jang-gun), wearing ornate but cute traditional armor, holding a protective shield or sword, yet with a charming and friendly vibe`;
   } else {
     // "friend" or default
-    styleDescription = `Friendly and cute little guardian angel character, looking like a trustworthy companion and friend, with a soft and lovable appearance`;
+    styleDescription = `Friendly and cute little guardian angel character, looking like a trustworthy and lovable companion`;
   }
 
-  return `${styleDescription} for a person named "${name}", 2D flat illustration, sticker art style, soft pastel colors, simple clean lines, very adorable chibi proportions. Theme: ${fortune.zodiacSign} constellation symbols subtly integrated into the background. Visual elements: ${elementTheme}. High quality, 4k digital art, sticker quality, lovable and peaceful atmosphere, suitable for merchandise and wallpapers.`;
+  return `${styleDescription} for a person named "${name}". 
+Visual Style: Front-facing view, 2D flat illustration, sticker art style, soft pastel colors, simple clean lines, adorable chibi proportions.
+Themes: Subtly integrate ${fortune.zodiacSign} constellation symbols and ${fortune.zodiacAnimal} motifs into the background.
+Elements: ${elementTheme}.
+Quality: High quality, 4k digital art, sticker quality, lovable and peaceful atmosphere.
+CRITICAL: Strict NO text, NO letters, NO characters, NO labels, and NO alphabets should be present in the image. Pure illustration only. Suitable for wallpapers.`;
 }
 
 export function generateTextPrompt(fortune: FortuneResult, region: string, name: string, language: string = "ko"): string {

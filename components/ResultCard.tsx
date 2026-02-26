@@ -18,12 +18,13 @@ interface ResultCardProps {
     analysisSummary?: string;
     onBack?: () => void;
     onStyleChange?: (theme: string) => Promise<string | null>;
+    onRegenerate?: () => Promise<string | null>;
 }
 
 export default function ResultCard({
     imageUrl, angelName, userName, comfortMessage, fortuneMessage,
     luckyNumbers, luckyFood, luckyOutfit, luckyPlace, analysisSummary,
-    onBack, onStyleChange
+    onBack, onStyleChange, onRegenerate
 }: ResultCardProps) {
     const { t } = useLanguage();
     const [proxyImageUrl, setProxyImageUrl] = useState(imageUrl);
@@ -61,6 +62,17 @@ export default function ResultCard({
         link.download = filename;
         link.href = dataUrl;
         link.click();
+    };
+
+    const handleManualRegenerate = async () => {
+        if (isImageLoading || !onRegenerate) return;
+        setIsImageLoading(true);
+        const newUrl = await onRegenerate();
+        if (newUrl) {
+            await fetchAndSetProxy(newUrl);
+        } else {
+            setIsImageLoading(false);
+        }
     };
 
     const handleThemeChange = async (theme: string) => {
@@ -116,34 +128,6 @@ export default function ResultCard({
         alert(t("linkCopied"));
     };
 
-    const handleKakaoShare = () => {
-        if (window.Kakao && window.Kakao.isInitialized()) {
-            window.Kakao.Share.sendDefault({
-                objectType: "feed",
-                content: {
-                    title: `${t("myAngel")}: ${angelName}`,
-                    description: t("appDesc2"),
-                    imageUrl: "https://my-suhogod-example.com/og-image.png", // Fallback OG image
-                    link: {
-                        mobileWebUrl: window.location.href,
-                        webUrl: window.location.href,
-                    },
-                },
-                buttons: [
-                    {
-                        title: t("submitBtn"),
-                        link: {
-                            mobileWebUrl: window.location.href,
-                            webUrl: window.location.href,
-                        },
-                    },
-                ],
-            });
-        } else {
-            alert(t("errorApi") + " Kakao Init Failed");
-        }
-    };
-
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "24px", alignItems: "center" }}>
             <div
@@ -193,6 +177,24 @@ export default function ResultCard({
                                 {theme.label}
                             </button>
                         ))}
+                        <button
+                            onClick={handleManualRegenerate}
+                            className="btn"
+                            disabled={isImageLoading}
+                            style={{
+                                flexShrink: 0,
+                                fontSize: "0.85rem",
+                                padding: "8px 16px",
+                                background: "#fff",
+                                border: "2px solid #111",
+                                cursor: isImageLoading ? "wait" : "pointer",
+                                boxShadow: "3px 3px 0px #111",
+                                color: "#4D88FF",
+                                fontWeight: "800"
+                            }}
+                        >
+                            🔄 {t("regenerateBtn")}
+                        </button>
                     </div>
                 </div>
 
@@ -312,7 +314,7 @@ export default function ResultCard({
                 <AdBanner position="in-content" />
             </div>
 
-            {/* Split Download Buttons */}
+            {/* Share Buttons */}
             <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%", maxWidth: "400px", marginTop: "16px" }}>
                 <div style={{ display: "flex", gap: "12px" }}>
                     <button onClick={handleDownloadFull} className="btn" style={{ flex: 1, background: "#06D6A0", fontSize: "1rem", padding: "14px" }}>
@@ -324,12 +326,9 @@ export default function ResultCard({
                 </div>
 
                 <div style={{ display: "flex", gap: "12px" }}>
-                    <button onClick={handleKakaoShare} className="btn" style={{ flex: 1, background: "#FEE500", border: "3px solid #111" }}>
-                        💬 {t("kakaoShare")}
-                    </button>
-
-                    <button onClick={handleCopyLink} className="btn" style={{ flex: 1, background: "#fff" }}>
-                        🔗 {t("copyLink")}
+                    {/* Kakao share button removed */}
+                    <button onClick={handleCopyLink} className="btn" style={{ flex: 1, background: "#FFD23F", border: "3px solid #111", height: "54px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                        🔗 <span style={{ fontSize: "1.1rem", fontWeight: "800" }}>{t("copyLink")}</span>
                     </button>
                 </div>
 

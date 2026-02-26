@@ -15,7 +15,8 @@ export default function Home() {
   const [resultData, setResultData] = useState({
     angelName: "",
     userName: "",
-    imageUrl: "",
+    images: {} as { [key: string]: string },
+    currentTheme: "friend",
     comfortMessage: "",
     fortuneMessage: "",
     luckyNumbers: [] as number[],
@@ -29,7 +30,8 @@ export default function Home() {
     setResultData({
       angelName: data.angelName,
       userName: data.userName,
-      imageUrl: data.imageUrl,
+      images: { [data.theme || "friend"]: data.imageUrl },
+      currentTheme: data.theme || "friend",
       comfortMessage: data.comfortMessage,
       fortuneMessage: data.fortuneMessage,
       luckyNumbers: data.luckyNumbers,
@@ -42,27 +44,49 @@ export default function Home() {
     setStep("result");
   };
 
-  const handleStyleChange = async (theme: string) => {
+  const generateImageOnly = async (theme: string) => {
     if (!lastInput) return null;
+    const res = await fetch("/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...lastInput, theme })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    return data.imageUrl;
+  };
+
+  const handleStyleChange = async (theme: string) => {
+    if (resultData.images[theme]) {
+      setResultData(prev => ({ ...prev, currentTheme: theme }));
+      return resultData.images[theme];
+    }
 
     try {
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...lastInput, theme })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      // Only update the image and theme-related fields if any
+      const newUrl = await generateImageOnly(theme);
       setResultData(prev => ({
         ...prev,
-        imageUrl: data.imageUrl
+        images: { ...prev.images, [theme]: newUrl },
+        currentTheme: theme
       }));
-
-      return data.imageUrl;
+      return newUrl;
     } catch (err) {
       console.error("Re-generation error", err);
+      return null;
+    }
+  };
+
+  const handleRegenerate = async () => {
+    const theme = resultData.currentTheme;
+    try {
+      const newUrl = await generateImageOnly(theme);
+      setResultData(prev => ({
+        ...prev,
+        images: { ...prev.images, [theme]: newUrl }
+      }));
+      return newUrl;
+    } catch (err) {
+      console.error("Manual re-gen error", err);
       return null;
     }
   };
@@ -111,8 +135,10 @@ export default function Home() {
         {step === "result" && (
           <ResultCard
             {...resultData}
+            imageUrl={resultData.images[resultData.currentTheme]}
             onBack={() => setStep("input")}
             onStyleChange={handleStyleChange}
+            onRegenerate={handleRegenerate}
           />
         )}
       </main>
