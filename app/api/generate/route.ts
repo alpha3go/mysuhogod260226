@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import { analyzeFortune } from "../../../lib/fortuneEngine";
 import { generateImagePrompt, generateTextPrompt } from "../../../lib/promptGenerator";
 
+export const runtime = 'edge';
 export const maxDuration = 60; // Allow longer execution time for Next.js Serverless (if deployed)
 
 export async function POST(req: Request) {
